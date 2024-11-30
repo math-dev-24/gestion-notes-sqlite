@@ -32,6 +32,19 @@ impl Database {
         )
     }
 
+    pub fn delete_note(&self, index: u32) -> Result<usize> {
+        match self.conn.execute("DELETE FROM Notes WHERE id = ?1", &[&index]) {
+            Ok(num) => {
+                if num > 0 {
+                    Ok(num)
+                } else {
+                    Err(rusqlite::Error::QueryReturnedNoRows)
+                }
+            }
+            Err(e) => Err(e),
+        }
+    }
+
     pub fn get_all_notes(&self) -> Result<Vec<Note>, rusqlite::Error> {
 
         let mut stmt = self.conn.prepare("SELECT id, name, content, created_at FROM Notes")?;
